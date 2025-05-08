@@ -1,6 +1,5 @@
 package com.example.solve_an_example
 
-import android.R
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -87,14 +86,15 @@ class MainActivity : AppCompatActivity() {
         binding.txtSecondOperand.text = secondOperand.toString()
     }
 
+    //метод обновления статистики
     fun updateStats() {
         //проверка введённого пользователем ответа
-        if (userAnswer == rightAnswer)
+        if (userAnswer == rightAnswer) //если дан правильный ответ
         {
             binding.linearLayoutExample.setBackgroundColor(Color.GREEN)
             correctAnswers++
         }
-        else {
+        else {//если дан неправильный ответ
             binding.linearLayoutExample.setBackgroundColor(Color.RED)
             wrongAnswers++
         }
