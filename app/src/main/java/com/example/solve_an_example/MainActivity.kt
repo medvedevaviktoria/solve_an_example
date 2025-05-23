@@ -20,6 +20,9 @@ class MainActivity : AppCompatActivity() {
     var rightAnswer = 0 //правильный ответ примера
     var userAnswer: Int? = 0//ответ, введённый пользователем
 
+    // Список для хранения делителей чисел
+    private val savedDivisors = mutableMapOf<Int, List<Int>>()
+
     //переменные для вывода сообщения, если пользователь не сделал выбор
     val text = "Напишите ответ в поле ввода!" //переменная с текстом об ошибке, если пользователь не сделал выбор
     var duration = Toast.LENGTH_SHORT //длительность показа сообщения
@@ -36,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         binding.btnStart.isEnabled = false //кнопка СТАРТ становится недоступна
         binding.editValue.isEnabled = true //поле ввода становится доступным
         binding.editValue.text.clear() //поле ввода очищается
-        binding.linearLayoutExample.setBackgroundColor(Color.WHITE) //фон примера становится белым
+        binding.root.setBackgroundColor(Color.WHITE) //фон всего экрана становится белым
         generateAnExample() //генерация примера и вывод на экран
     }
 
@@ -62,16 +65,22 @@ class MainActivity : AppCompatActivity() {
 
         //если сгенерирована операция деления, то проверяем, чтобы результат деления был целым числом
         if (operation == "/") {
-            var divisors = mutableListOf<Int>() //список всех делителей первого операнда
-            for (i in 1..firstOperand ) {
-                if (firstOperand % i == 0)
-                    divisors.add(i) //добавляем в список операнд, если при делении на него результат целый
+            //используем сохраненные делители или вычисляем новые
+            secondOperand = if (savedDivisors.containsKey(firstOperand)) {
+                savedDivisors[firstOperand]!!.random()//!! - не null, то есть по заданному делимому ТОЧНО существует список делителей
+            } else {
+                var divisors = mutableListOf<Int>() //список всех делителей первого операнда
+                for (i in 1..firstOperand ) {
+                    if (firstOperand % i == 0)
+                        divisors.add(i) //добавляем в список операнд, если при делении на него результат целый
+                }
+                savedDivisors[firstOperand] = divisors
+                divisors.random()
             }
-            secondOperand = divisors.random()
             rightAnswer = firstOperand / secondOperand // записываем правильный ответ примера в переменную rightAnswer
         }
         else {
-            if (operation == "-") secondOperand = Random.nextInt(1,firstOperand)
+            if (operation == "-") secondOperand = Random.nextInt(10,firstOperand)
             else secondOperand = Random.nextInt(10,100)
             rightAnswer = when (operation) {
                 "*" -> firstOperand * secondOperand
@@ -91,11 +100,11 @@ class MainActivity : AppCompatActivity() {
         //проверка введённого пользователем ответа
         if (userAnswer == rightAnswer) //если дан правильный ответ
         {
-            binding.linearLayoutExample.setBackgroundColor(Color.GREEN)
+            binding.root.setBackgroundColor(Color.GREEN)
             correctAnswers++
         }
         else {//если дан неправильный ответ
-            binding.linearLayoutExample.setBackgroundColor(Color.RED)
+            binding.root.setBackgroundColor(Color.RED)
             wrongAnswers++
         }
         binding.txtAllExamples.text = (wrongAnswers + correctAnswers).toString()
